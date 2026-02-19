@@ -174,6 +174,23 @@ final class SupabaseClient {
         return (data, http)
     }
 
+    /// Get current user info from Supabase Auth
+    func currentUser() async throws -> [String: Any]? {
+        try await refreshIfNeeded()
+        guard let s = loadSession() else { return nil }
+        let endpoint = supabaseUrl.appendingPathComponent("auth/v1/user")
+        var req = URLRequest(url: endpoint)
+        req.httpMethod = "GET"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue(anonKey, forHTTPHeaderField: "apikey")
+        req.setValue("Bearer \(s.accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (data, resp) = try await urlSession.data(for: req)
+        guard let http = resp as? HTTPURLResponse, (200...299).contains(http.statusCode) else { return nil }
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        return json
+    }
+
     // Convenience: GET from table with query params (Supabase REST endpoint: /rest/v1/<table>)
     func getFromTable(_ table: String, query: String? = nil) async throws -> Data {
         let path = "rest/v1/\(table)" + (query.map { "?\($0)" } ?? "")
