@@ -1,0 +1,14 @@
+# Ignore local environment files
+.env
+.env.local
+
+# Xcode
+.idea/
+*.xcworkspace
+xcuserdata/
+DerivedData/
+build/
+
+# Python virtual env
+.venv/
+env/
