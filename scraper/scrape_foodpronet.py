@@ -49,34 +49,36 @@ def scrape():
     updated = 0
     for hall_name, hall_code in HALLS:
         for meal in MEALS:
-            # For demo, pretend there's a pickmenu URL pattern
+            # For each of today and tomorrow
             for d in range(0,2):
-                # date as ISO
                 from datetime import date, timedelta
                 dt = (date.today() + timedelta(days=d)).isoformat()
-                # Stub: pretend we fetch items from a source page
-                # In real implementation, fetch the pickmenu page and parse items
-                source_url = f"https://example.com/menus/{hall_code}/{meal}/{dt}"
-                # For demonstration generate a couple of fake items
-                items = [
-                    { 'name': f"Sample {meal} Item A", 'station': 'Station A', 'ingredients_url': urljoin(source_url, '/label/a') },
-                    { 'name': f"Sample {meal} Item B", 'station': 'Station B', 'ingredients_url': urljoin(source_url, '/label/b') }
-                ]
-                for it in items:
-                    ingredients = fetch_label(it.get('ingredients_url'))
-                    row = {
-                        'hall': hall_name,
-                        'meal': meal,
-                        'date': dt,
-                        'station': it.get('station'),
-                        'name': it.get('name'),
-                        'ingredients': ingredients,
-                        'source_url': source_url,
-                        'source_key': str(uuid.uuid5(uuid.NAMESPACE_URL, it.get('ingredients_url') or it.get('name')))
-                    }
-                    upsert_menu_item(row)
-                    inserted += 1
-                    time.sleep(0.5)
+
+                # TODO: Implement real scraping logic here for the university pickmenu / FoodPro pages.
+                # This script previously inserted placeholder items for demo; that behavior has been removed
+                # so the Scraper Lead can implement real parsing without accidental sample data being pushed.
+
+                # Hint / recommended approach for Scraper Lead:
+                # 1) Determine the real pickmenu URL pattern for each hall/meal/date.
+                # 2) Fetch the pickmenu page and parse menu item blocks with BeautifulSoup.
+                # 3) For each menu item, attempt to find a label/nutrition link and fetch it to extract ingredients.
+                # 4) Build a row dict matching the `menu_items` schema and call upsert_menu_item(row).
+                # 5) Rate-limit requests and handle missing data gracefully.
+
+                # Example row structure (for when parsing is implemented):
+                # row = {
+                #   'hall': hall_name,
+                #   'meal': meal,
+                #   'date': dt,
+                #   'station': station_name,
+                #   'name': item_name,
+                #   'ingredients': ingredients_text,
+                #   'source_url': page_url,
+                #   'source_key': stable_key
+                # }
+
+                # For now, only log what's expected.
+                print(f"[INFO] TODO: scrape hall={hall_name} meal={meal} date={dt} — implement parsing and call upsert_menu_item(row)")
     print(f"Inserted/updated: {inserted}")
 
 if __name__ == '__main__':
